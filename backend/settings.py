@@ -20,7 +20,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 dotenv_file = BASE_DIR / ".env"
 
-if os.isfile(dotenv_file):
+if os.path.isfile(dotenv_file):
     dotenv.load_dotenv(dotenv_file)
 
 
@@ -45,8 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "auth.apps.AuthConfig",
-    "api.apps.ApiConfig",
+    "users",
+    "api",
     "rest_framework",
     "corsheaders",
 ]
