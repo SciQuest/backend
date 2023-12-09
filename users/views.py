@@ -7,7 +7,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
         @classmethod
         def get_token(cls, user):
             token = super().get_token(user)
-            token["role"] = user.role
+            token["user_role"] = user.role
             return token
 
     serializer_class = CustomTokenObtainPairSerializer
