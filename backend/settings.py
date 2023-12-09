@@ -95,6 +95,17 @@ DATABASES = {
     }
 }
 
+if os.getenv("DB_HOSTED", "False") == "True":
+    DATABASES = {
+        "default": {
+            "ENGINE": os.getenv("DB_ENGINE"),
+            "HOST": os.getenv("DB_HOST"),
+            "NAME": os.getenv("DB_NAME"),
+            "PORT": os.getenv("DB_PORT"),
+            "USER": os.getenv("DB_USER"),
+            "PASSWORD": os.getenv("DB_PASSWORD"),
+        }
+    }
 
 # Password validation
 # https://docs.djangoproject.com/en/4.2/ref/settings/#auth-password-validators
@@ -152,7 +163,7 @@ REST_FRAMEWORK = {
 }
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(minutes=5),
+    "ACCESS_TOKEN_LIFETIME": datetime.timedelta(hours=1),
     "REFRESH_TOKEN_LIFETIME": datetime.timedelta(days=7),
     "ALGORITHM": "HS256",
     "AUTH_HEADER_TYPES": ("Bearer",),
