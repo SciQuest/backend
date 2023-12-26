@@ -180,10 +180,13 @@ CORS_ALLOW_CREDENTIALS = True
 
 ELASTICSEARCH_DSL = {
     "default": {
-        "hosts": os.getenv("ELASTICSEARCH_HOST"),
+        "hosts": [
+            os.getenv("ELASTICSEARCH_HOST"),
+        ],
         "http_auth": (
             os.getenv("ELASTICSEARCH_USERNAME"),
             os.getenv("ELASTICSEARCH_PASSWORD"),
         ),
+        "verify_certs": False,
     }
 }
