@@ -51,6 +51,8 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework_simplejwt",
     "corsheaders",
+    "django_elasticsearch_dsl",
+    "django_elasticsearch_dsl_drf",
 ]
 
 MIDDLEWARE = [
@@ -175,3 +177,13 @@ SIMPLE_JWT = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
+
+ELASTICSEARCH_DSL = {
+    "default": {
+        "hosts": os.getenv("ELASTICSEARCH_HOST"),
+        "http_auth": (
+            os.getenv("ELASTICSEARCH_USERNAME"),
+            os.getenv("ELASTICSEARCH_PASSWORD"),
+        ),
+    }
+}
