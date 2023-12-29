@@ -187,6 +187,6 @@ ELASTICSEARCH_DSL = {
             os.getenv("ELASTICSEARCH_USERNAME"),
             os.getenv("ELASTICSEARCH_PASSWORD"),
         ),
-        "verify_certs": False,
+        "ssl_assert_fingerprint": os.getenv("ELASTICSEARCH_SSL"),
     }
 }
