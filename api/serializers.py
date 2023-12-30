@@ -26,6 +26,7 @@ class ArticleDocumentSerializer(DocumentSerializer):
             "text",
             "references",
             "pdf",
+            "date",
         )
 
         read_only_fields = ("id",)

@@ -1,3 +1,4 @@
+from datetime import date
 import fitz
 
 
@@ -8,13 +9,14 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         pdf_text = "".join(char for char in pdf_text if ord(char) < 128)
 
     data = {
-        "title": "",
+        "title": pdf_path,
         "abstract": "",
         "authors": ["", ""],
         "institutions": ["", "", ""],
         "keywords": ["", ""],
         "text": "",
         "references": [""],
+        "date": date.today(),
     }
 
     return data

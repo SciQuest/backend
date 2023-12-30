@@ -1,4 +1,5 @@
 from django_elasticsearch_dsl import Document, Index, fields
+from .utils.pdfs import extract_data
 from . import models
 
 
@@ -18,7 +19,13 @@ class ArticleDocument(Document):
     keywords = fields.TextField(multi=True)
     text = fields.TextField()
     references = fields.TextField(multi=True)
+    date = fields.DateField()
 
     class Django:
         model = models.Article
         fields = ["id", "pdf"]
+
+    def prepare(self, instance):
+        data = super(ArticleDocument, self).prepare(instance)
+        data.update(extract_data(data["pdf"][1:]))
+        return data
