@@ -14,3 +14,6 @@ class Article(models.Model):
     ) -> tuple[int, dict[str, int]]:
         self.pdf.delete()
         return super().delete(using, keep_parents)
+
+    def __str__(self) -> str:
+        return str(self.pdf)
