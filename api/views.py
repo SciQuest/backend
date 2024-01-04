@@ -25,3 +25,17 @@ class ArticleUploadView(APIView):
             documents.ArticleDocument.get(serializer.data["id"]).to_dict(),
             status=status.HTTP_201_CREATED,
         )
+
+
+class FavoriteArticlesView(APIView):
+    def get(self, request: Request):
+        return self._get(request)
+
+    @staticmethod
+    @protected(allowed_roles=[Role.USER])
+    def _get(request: Request):
+        ids = list(request.user.profile.favorite_articles.values_list("id", flat=True))
+        response = documents.ArticleDocument.search().filter("terms", id=ids).execute()
+        articles = map(lambda hit: hit.to_dict(), response.hits)
+
+        return Response(articles, status=status.HTTP_200_OK)
