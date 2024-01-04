@@ -1,9 +1,11 @@
+from django.shortcuts import get_object_or_404
 from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from users.utils.decorators import protected
 from users.models import Role
+from . import models
 from . import documents
 from . import serializers
 
@@ -39,3 +41,39 @@ class FavoriteArticlesView(APIView):
         articles = map(lambda hit: hit.to_dict(), response.hits)
 
         return Response(articles, status=status.HTTP_200_OK)
+
+
+class FavoriteArticleView(APIView):
+    def post(self, request: Request, article_id: int):
+        return self._post(request, article_id)
+
+    def delete(self, request: Request, article_id: int):
+        return self._delete(request, article_id)
+
+    @staticmethod
+    @protected(allowed_roles=[Role.USER])
+    def _post(request: Request, article_id: int):
+        article = get_object_or_404(models.Article, pk=article_id)
+        profile = request.user.profile
+
+        profile.favorite_articles.add(article)
+        profile.save()
+
+        return Response(
+            documents.ArticleDocument.get(article_id).to_dict(),
+            status=status.HTTP_201_CREATED,
+        )
+
+    @staticmethod
+    @protected(allowed_roles=[Role.USER])
+    def _delete(request: Request, article_id: int):
+        article = get_object_or_404(models.Article, pk=article_id)
+        profile = request.user.profile
+
+        profile.favorite_articles.remove(article)
+        profile.save()
+
+        return Response(
+            documents.ArticleDocument.get(article_id).to_dict(),
+            status=status.HTTP_204_NO_CONTENT,
+        )
