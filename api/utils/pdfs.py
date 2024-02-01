@@ -15,16 +15,13 @@ def extract_references(text):
         else:
             return None
 
-def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
-    pdf_text = ""
-    
+def extract_data(pdf_path: str) -> dict[str, str | list[str]]:   
     reader = PdfReader(pdf_file)
     pdf_text = ""
     with open(pdf_file, "rb") as pdf_file:
         reader=PdfReader(pdf_file)
         pdf_text = "\n".join([reader.pages[i].extract_text() for i in range(len(reader.pages))])
         pdf_text = "".join(char for char in pdf_text if ord(char) < 128)
-        #print(pdf_text)
         
     num_pages = len(reader.pages)
     first_pages = [reader.pages[i] for i in range(num_pages) if (i < 2)] # first two pages
@@ -35,15 +32,11 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
 
     # Use regular expression to extract everything after "References" 
     references = extract_references(pdf_text)
-
-        
     
     title_date = {
         "title": pdf_path,
         "date": date.today(),
     }
-        
-        
     client1 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     client2 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     completion1 = client1.chat.completions.create(
@@ -57,6 +50,7 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         {"role": "user", "content": text}
     ]
     )
+    #multiprocessing should be between completion1 and completion2
     completion2 = client2.chat.completions.create(
     model="gpt-3.5-turbo-16k",
     messages=[
