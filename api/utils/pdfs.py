@@ -73,5 +73,6 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
 
     merged_dict = {**dict1, **dict2}
     result = json.dumps(merged_dict, indent=2)
+    data= {**result,**title_date}
 
-    return result
+    return data
