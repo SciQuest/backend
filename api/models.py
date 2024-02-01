@@ -10,7 +10,7 @@ class Article(models.Model):
     )
 
     def delete(self, *args, **kwargs):
-        self.pdf.delete()
+        self.pdf.delete(save=False)
         super().delete(*args, **kwargs)
 
     def __str__(self) -> str:
