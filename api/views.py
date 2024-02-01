@@ -10,9 +10,20 @@ from . import documents
 from . import serializers
 
 
-class ArticleUploadView(APIView):
+class ArticlesView(APIView):
+    def get(self, request: Request):
+        return self._get(request)
+
     def post(self, request: Request):
         return self._post(request)
+
+    @staticmethod
+    @protected(allowed_roles=[Role.USER, Role.MODERATOR, Role.ADMIN])
+    def _get(request: Request):
+        response = documents.ArticleDocument.search().execute()
+        articles = map(lambda hit: hit.to_dict(), response.hits)
+
+        return Response(articles, status=status.HTTP_200_OK)
 
     @staticmethod
     @protected(allowed_roles=[Role.ADMIN])
@@ -26,6 +37,20 @@ class ArticleUploadView(APIView):
         return Response(
             documents.ArticleDocument.get(serializer.data["id"]).to_dict(),
             status=status.HTTP_201_CREATED,
+        )
+
+
+class ArticleView(APIView):
+    def get(self, request: Request, article_id: int):
+        return self._get(request, article_id)
+
+    @staticmethod
+    @protected(allowed_roles=[Role.USER, Role.MODERATOR, Role.ADMIN])
+    def _get(request: Request, article_id: int):
+        get_object_or_404(models.Article, pk=article_id)
+        return Response(
+            documents.ArticleDocument.get(article_id).to_dict(),
+            status=status.HTTP_200_OK,
         )
 
 
