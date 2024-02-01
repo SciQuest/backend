@@ -1,9 +1,8 @@
 import threading
 import openai
 import fitz
-import datetime
-import os
 import re
+import datetime
 import json
 
 
@@ -31,9 +30,9 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
     }
 
     def openai_request1():
-        openai_client1 = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        openai_client = openai.OpenAI()
 
-        completion1 = openai_client1.chat.completions.create(
+        completion = openai_client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
                 {
@@ -55,21 +54,21 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
             ],
         )
 
-        response1 = json.loads(completion1.choices[0].message.content)
+        response = json.loads(completion.choices[0].message.content)
 
         lock.acquire()
-        data["title"] = response1["title"]
-        data["abstract"] = response1["abstract"]
-        data["authors"] = response1["authors"]
-        data["institutions"] = response1["institutions"]
-        data["keywords"] = response1["keywords"]
-        data["date"] = (datetime.date.fromisoformat(response1["publication_date"]),)
+        data["title"] = response["title"]
+        data["abstract"] = response["abstract"]
+        data["authors"] = response["authors"]
+        data["institutions"] = response["institutions"]
+        data["keywords"] = response["keywords"]
+        data["date"] = (datetime.date.fromisoformat(response["publication_date"]),)
         lock.release()
 
     def openai_request2():
-        openai_client2 = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        openai_client = openai.OpenAI()
 
-        completion2 = openai_client2.chat.completions.create(
+        completion = openai_client.chat.completions.create(
             model="gpt-3.5-turbo-16k",
             messages=[
                 {
@@ -83,10 +82,10 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
             ],
         )
 
-        response2 = json.loads(completion2.choices[0].message.content)
+        response = json.loads(completion.choices[0].message.content)
 
         lock.acquire()
-        data["references"] = response2["references"]
+        data["references"] = response["references"]
         lock.release()
 
     thread1 = threading.Thread(target=openai_request1)
