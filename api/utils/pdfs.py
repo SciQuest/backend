@@ -36,6 +36,7 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
     title_date = {
         "title": pdf_path,
         "date": date.today(),
+        "text":pdf_text
     }
     client1 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     client2 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
