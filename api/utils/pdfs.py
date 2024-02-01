@@ -62,7 +62,7 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         data["authors"] = response["authors"]
         data["institutions"] = response["institutions"]
         data["keywords"] = response["keywords"]
-        data["date"] = (datetime.date.fromisoformat(response["publication_date"]),)
+        data["date"] = datetime.date.fromisoformat(response["publication_date"])
         lock.release()
 
         openai_client.close()
