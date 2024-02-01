@@ -65,6 +65,8 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         data["date"] = (datetime.date.fromisoformat(response["publication_date"]),)
         lock.release()
 
+        openai_client.close()
+
     def openai_request2():
         openai_client = openai.OpenAI()
 
@@ -87,6 +89,8 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         lock.acquire()
         data["references"] = response["references"]
         lock.release()
+
+        openai_client.close()
 
     thread1 = threading.Thread(target=openai_request1)
     thread2 = threading.Thread(target=openai_request2)
