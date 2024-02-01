@@ -7,3 +7,4 @@ psycopg2-binary
 django-elasticsearch-dsl
 django-elasticsearch-dsl-drf
 PyMuPDF
+openai
