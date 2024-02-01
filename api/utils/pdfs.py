@@ -27,30 +27,51 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         #print(pdf_text)
         
     num_pages = len(reader.pages)
-    first_pages = [reader.pages[i] for i in range(num_pages) if (i < 1)] # first page
-
-    text1 = ""
-    text2 = ""
-
+    first_pages = [reader.pages[i] for i in range(num_pages) if (i < 2)] # first two pages
+    text = ""
     for page in first_pages:
-        text1 +=  page.extract_text()
-        text1+= "\n"
+        text +=  page.extract_text()
+        text+= "\n"
 
     # Use regular expression to extract everything after "References" 
     references = extract_references(pdf_text)
-    print(references)    
 
         
     
-    data = {
+    title_date = {
         "title": pdf_path,
-        "abstract": "",
-        "authors": ["", ""],
-        "institutions": ["", "", ""],
-        "keywords": ["", ""],
-        "text": "",
-        "references": [""],
         "date": date.today(),
     }
+        
+        
+    client1 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client2 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    completion1 = client1.chat.completions.create(
+    model="gpt-3.5-turbo",
+    messages=[
+        {"role": "system", "content": "You are an expert in analyzing scientific research papers."+"From the following text extract informations without making any modification. put them in the following json format that contains only the following elements :"+
+                " abstract"+
+                " authors"+
+                " institutions"+
+                " keywords"+"\n for the authors and institutions ,add only their names . "+"\n" },
+        {"role": "user", "content": text}
+    ]
+    )
+    completion2 = client2.chat.completions.create(
+    model="gpt-3.5-turbo-16k",
+    messages=[
+        {"role": "system", "content": "You are an expert in analyzing scientific research papers."+"From the following text extract informations without making any modification. put them in the following json format that contains only the references in a list of strings :"+
+                " {references"+"\n" },
+        {"role": "user", "content": references}
+    ]
+    )
+    print(completion1.choices[0].message.content)
+    print(completion2.choices[0].message.content)
 
-    return data
+    dict1 = json.loads(completion1.choices[0].message.content)
+    dict2 = json.loads(completion2.choices[0].message.content)
+
+    merged_dict = {**dict1, **dict2}
+    result = json.dumps(merged_dict, indent=2)
+
+    return result
