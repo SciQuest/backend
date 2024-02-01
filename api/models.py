@@ -1,4 +1,3 @@
-from typing import Any
 from django.db import models
 from django.core.validators import FileExtensionValidator
 from users.models import User
@@ -10,11 +9,9 @@ class Article(models.Model):
         validators=[FileExtensionValidator(allowed_extensions=["pdf"])],
     )
 
-    def delete(
-        self, using: Any = ..., keep_parents: bool = ...
-    ) -> tuple[int, dict[str, int]]:
+    def delete(self, *args, **kwargs):
         self.pdf.delete()
-        return super().delete(using, keep_parents)
+        super().delete(*args, **kwargs)
 
     def __str__(self) -> str:
         return str(self.pdf)

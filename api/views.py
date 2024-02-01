@@ -44,6 +44,9 @@ class ArticleView(APIView):
     def get(self, request: Request, article_id: int):
         return self._get(request, article_id)
 
+    def delete(self, request: Request, article_id: int):
+        return self._delete(request, article_id)
+
     @staticmethod
     @protected(allowed_roles=[Role.USER, Role.MODERATOR, Role.ADMIN])
     def _get(request: Request, article_id: int):
@@ -52,6 +55,16 @@ class ArticleView(APIView):
             documents.ArticleDocument.get(article_id).to_dict(),
             status=status.HTTP_200_OK,
         )
+
+    @staticmethod
+    @protected(allowed_roles=[Role.MODERATOR])
+    def _delete(request: Request, article_id: int):
+        article = get_object_or_404(models.Article, pk=article_id)
+        document = documents.ArticleDocument.get(article_id).to_dict()
+
+        article.delete()
+
+        return Response(document, status=status.HTTP_204_NO_CONTENT)
 
 
 class FavoriteArticlesView(APIView):
