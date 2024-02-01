@@ -38,8 +38,8 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         "date": date.today(),
         "text":pdf_text
     }
-    client1 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-    client2 = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+    client1 = OpenAI()
+    client2 = OpenAI()
     completion1 = client1.chat.completions.create(
     model="gpt-3.5-turbo",
     messages=[
