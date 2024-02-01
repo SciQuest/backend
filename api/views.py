@@ -44,6 +44,9 @@ class ArticleView(APIView):
     def get(self, request: Request, article_id: int):
         return self._get(request, article_id)
 
+    def put(self, request: Request, article_id: int):
+        return self._put(request, article_id)
+
     def delete(self, request: Request, article_id: int):
         return self._delete(request, article_id)
 
@@ -55,6 +58,27 @@ class ArticleView(APIView):
             documents.ArticleDocument.get(article_id).to_dict(),
             status=status.HTTP_200_OK,
         )
+
+    @staticmethod
+    @protected(allowed_roles=[Role.MODERATOR])
+    def _put(request: Request, article_id: int):
+        get_object_or_404(models.Article, pk=article_id)
+        document = documents.ArticleDocument.get(article_id)
+        fields = set(serializers.ArticleDocumentSerializer.Meta.fields) - set(
+            serializers.ArticleDocumentSerializer.Meta.read_only_fields
+        )
+
+        for key, value in request.data.items():
+            if key not in fields:
+                return Response(
+                    {"detail": f"{key} is not a valid field to be updated"},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            setattr(document, key, value)
+
+        document.save()
+
+        return Response(document.to_dict(), status=status.HTTP_200_OK)
 
     @staticmethod
     @protected(allowed_roles=[Role.MODERATOR])
