@@ -6,4 +6,6 @@ python-dotenv
 psycopg2-binary
 django-elasticsearch-dsl
 django-elasticsearch-dsl-drf
-PyMuPDF
+PyPDF2
+openai
+

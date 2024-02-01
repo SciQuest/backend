@@ -1,5 +1,9 @@
 from datetime import date
-import fitz
+import re
+import os
+from openai import OpenAI
+from dotenv import load_dotenv
+import json
 
 
 def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
@@ -8,6 +12,8 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         pdf_text = "[PAGE DELIMITER]\n".join([page.get_text() for page in pdf_file])
         pdf_text = "".join(char for char in pdf_text if ord(char) < 128)
 
+     
+    
     data = {
         "title": pdf_path,
         "abstract": "",
