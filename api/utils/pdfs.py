@@ -60,8 +60,6 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         {"role": "user", "content": references}
     ]
     )
-    print(completion1.choices[0].message.content)
-    print(completion2.choices[0].message.content)
 
     dict1 = json.loads(completion1.choices[0].message.content)
     dict2 = json.loads(completion2.choices[0].message.content)
