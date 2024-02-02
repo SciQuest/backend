@@ -50,7 +50,19 @@ class UserView(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class UsersView(APIView):
+class ModeratorsView(APIView):
+    def get(self, request: Request):
+        return self._get(request)
+
+    @staticmethod
+    @protected(allowed_roles=[models.Role.ADMIN])
+    def _get(request: Request):
+        moderators = models.User.objects.filter(role=models.Role.MODERATOR)
+        serializer = serializers.UserSerializer(moderators, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ModeratorView(APIView):
     def put(self, request: Request, user_id: int):
         return self._put(request, user_id)
 
