@@ -65,11 +65,13 @@ class UsersView(APIView):
             pk=user_id,
             role=models.Role.MODERATOR,
         )
+
         serializer = serializers.UserSerializer(
             moderator,
             data=request.data,
             partial=True,
         )
+
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
@@ -83,6 +85,8 @@ class UsersView(APIView):
             pk=user_id,
             role=models.Role.MODERATOR,
         )
+
         serializer = serializers.UserSerializer(moderator)
         moderator.delete()
+
         return Response(serializer.data, status=status.HTTP_204_NO_CONTENT)
