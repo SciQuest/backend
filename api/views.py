@@ -31,7 +31,12 @@ class ArticlesView(APIView):
     @staticmethod
     @protected(allowed_roles=[Role.USER, Role.MODERATOR, Role.ADMIN])
     def _get(request: Request):
-        response = documents.ArticleDocument.search().execute()
+        response = (
+            documents.ArticleDocument.search()
+            .sort({"date": {"order": "desc"}})
+            .execute()
+        )
+
         articles = map(lambda hit: hit.to_dict(), response.hits)
 
         return Response(articles, status=status.HTTP_200_OK)
@@ -155,7 +160,12 @@ class FavoriteArticlesView(APIView):
     @protected(allowed_roles=[Role.USER])
     def _get(request: Request):
         ids = list(request.user.profile.favorite_articles.values_list("id", flat=True))
-        response = documents.ArticleDocument.search().filter("terms", id=ids).execute()
+        response = (
+            documents.ArticleDocument.search()
+            .filter("terms", id=ids)
+            .sort({"date": {"order": "desc"}})
+            .execute()
+        )
         articles = map(lambda hit: hit.to_dict(), response.hits)
 
         return Response(articles, status=status.HTTP_200_OK)
