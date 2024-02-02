@@ -14,9 +14,36 @@ articles_index.settings(
 class ArticleDocument(Document):
     title = fields.TextField()
     abstract = fields.TextField()
-    authors = fields.TextField(multi=True)
-    institutions = fields.TextField(multi=True)
-    keywords = fields.TextField(multi=True)
+    authors = fields.TextField(
+        analyzer="standard",
+        multi=True,
+        fields={
+            "raw": fields.TextField(
+                analyzer="keyword",
+                multi=True,
+            )
+        },
+    )
+    institutions = fields.TextField(
+        analyzer="standard",
+        multi=True,
+        fields={
+            "raw": fields.TextField(
+                analyzer="keyword",
+                multi=True,
+            )
+        },
+    )
+    keywords = fields.TextField(
+        analyzer="standard",
+        multi=True,
+        fields={
+            "raw": fields.TextField(
+                analyzer="keyword",
+                multi=True,
+            )
+        },
+    )
     text = fields.TextField()
     references = fields.TextField(multi=True)
     date = fields.DateField()

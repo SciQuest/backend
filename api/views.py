@@ -3,6 +3,17 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
+from django_elasticsearch_dsl_drf.constants import (
+    LOOKUP_FILTER_RANGE,
+    LOOKUP_FILTER_TERM,
+)
+from django_elasticsearch_dsl_drf.filter_backends import (
+    FilteringFilterBackend,
+    MultiMatchSearchFilterBackend,
+    OrderingFilterBackend,
+    DefaultOrderingFilterBackend,
+)
 from users.utils.decorators import protected
 from users.models import Role
 from . import models
@@ -89,6 +100,51 @@ class ArticleView(APIView):
         article.delete()
 
         return Response(document, status=status.HTTP_204_NO_CONTENT)
+
+
+class ArticleSearchView(DocumentViewSet):
+    document = documents.ArticleDocument
+    serializer_class = serializers.ArticleDocumentSerializer
+
+    filter_backends = [
+        MultiMatchSearchFilterBackend,
+        FilteringFilterBackend,
+        OrderingFilterBackend,
+        DefaultOrderingFilterBackend,
+    ]
+
+    multi_match_search_fields = {
+        "title": {"boost": 4},
+        "keywords": {"boost": 3},
+        "authors": {"boost": 2},
+        "text": {"boost": 1},
+    }
+
+    multi_match_options = {
+        "operator": "or",
+    }
+
+    filter_fields = {
+        "keywords": {
+            "field": "keywords.raw",
+            "lookups": [LOOKUP_FILTER_TERM],
+        },
+        "authors": {
+            "field": "authors.raw",
+            "lookups": [LOOKUP_FILTER_TERM],
+        },
+        "institutions": {
+            "field": "institutions.raw",
+            "lookups": [LOOKUP_FILTER_TERM],
+        },
+        "date": {
+            "field": "date",
+            "lookups": [LOOKUP_FILTER_RANGE],
+        },
+    }
+
+    ordering_fields = {"date": {"order": "desc"}}
+    ordering = ("-date",)
 
 
 class FavoriteArticlesView(APIView):
