@@ -19,14 +19,14 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
 
     lock = threading.Lock()
     data = {
-        "title": None,
-        "abstract": None,
-        "authors": None,
-        "institutions": None,
-        "keywords": None,
+        "title": "",
+        "abstract": "",
+        "authors": [],
+        "institutions": [],
+        "keywords": [],
         "text": pdf_text,
-        "references": None,
-        "date": None,
+        "references": [],
+        "date": datetime.date.today(),
     }
 
     def openai_request1():
