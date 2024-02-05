@@ -39,3 +39,4 @@ class TestViews(TestSetUp):
             HTTP_AUTHORIZATION=f"Bearer {admin_token}",
         )
         self.assertEqual(response.data["role"], models.Role.MODERATOR)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
