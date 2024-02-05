@@ -1,0 +1,79 @@
+{
+  "sciquest_articles": {
+    "aliases": {},
+    "mappings": {
+      "properties": {
+        "abstract": {
+          "type": "text"
+        },
+        "authors": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "text",
+              "analyzer": "keyword"
+            }
+          },
+          "analyzer": "standard"
+        },
+        "date": {
+          "type": "date"
+        },
+        "id": {
+          "type": "long"
+        },
+        "institutions": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "text",
+              "analyzer": "keyword"
+            }
+          },
+          "analyzer": "standard"
+        },
+        "keywords": {
+          "type": "text",
+          "fields": {
+            "raw": {
+              "type": "text",
+              "analyzer": "keyword"
+            }
+          },
+          "analyzer": "standard"
+        },
+        "pdf": {
+          "type": "text"
+        },
+        "references": {
+          "type": "text"
+        },
+        "text": {
+          "type": "text"
+        },
+        "title": {
+          "type": "text"
+        }
+      }
+    },
+    "settings": {
+      "index": {
+        "routing": {
+          "allocation": {
+            "include": {
+              "_tier_preference": "data_content"
+            }
+          }
+        },
+        "number_of_shards": "1",
+        "provided_name": "sciquest_articles",
+        "creation_date": "1707164200986",
+        "number_of_replicas": "0",
+        "uuid": "U_HxXbQ6ReeMDYyr9Ur7Yg",
+        "version": {
+          "created": "8500003"
+        }
+      }
+    }
+  }
+}
