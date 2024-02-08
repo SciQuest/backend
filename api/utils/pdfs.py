@@ -14,9 +14,6 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         first_page_text = pdf_file[0].get_text()
         first_page_text = "".join(char for char in first_page_text if ord(char) < 128)
 
-    match = re.compile(r"(?is).*references(.*)").search(pdf_text)
-    references_text = match.group(1) if match else ""
-
     lock = threading.Lock()
     data = {
         "title": "",
@@ -29,7 +26,7 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
         "date": datetime.date.today(),
     }
 
-    def openai_request1():
+    def openai_request():
         openai_client = openai.OpenAI()
 
         completion = openai_client.chat.completions.create(
@@ -67,33 +64,18 @@ def extract_data(pdf_path: str) -> dict[str, str | list[str]]:
 
         openai_client.close()
 
-    def openai_request2():
-        openai_client = openai.OpenAI()
-
-        completion = openai_client.chat.completions.create(
-            model="gpt-3.5-turbo-16k",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are an expert in analyzing scientific research papers."
-                    + "From the following text extract informations without making any modification. put them in the following json format that contains only the references in a list of strings :"
-                    + " references"
-                    + "\n",
-                },
-                {"role": "user", "content": references_text},
-            ],
-        )
-
-        response = json.loads(completion.choices[0].message.content)
+    def regex_extractor():
+        match = re.compile(r"(?is).*references(.*)").search(pdf_text)
+        references_text = match.group(1) if match else ""
+        references = re.findall(r"\[\d+\][^\[\]]+?(?=\[\d+\]|$)", references_text)
+        references = [ref.strip() for ref in references]
 
         lock.acquire()
-        data["references"] = response["references"]
+        data["references"] = references if references else [""]
         lock.release()
 
-        openai_client.close()
-
-    thread1 = threading.Thread(target=openai_request1)
-    thread2 = threading.Thread(target=openai_request2)
+    thread1 = threading.Thread(target=openai_request)
+    thread2 = threading.Thread(target=regex_extractor)
 
     thread1.start()
     thread2.start()
