@@ -34,6 +34,7 @@ class ArticlesView(APIView):
         response = (
             documents.ArticleDocument.search()
             .sort({"date": {"order": "desc"}})
+            .params(size=10000)
             .execute()
         )
 
@@ -151,6 +152,10 @@ class ArticleSearchView(DocumentViewSet):
     ordering_fields = {"date": {"order": "desc"}}
     ordering = ("-date",)
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.params(size=10000)
+
 
 class FavoriteArticlesView(APIView):
     def get(self, request: Request):
@@ -164,6 +169,7 @@ class FavoriteArticlesView(APIView):
             documents.ArticleDocument.search()
             .filter("terms", id=ids)
             .sort({"date": {"order": "desc"}})
+            .params(size=10000)
             .execute()
         )
         articles = map(lambda hit: hit.to_dict(), response.hits)
